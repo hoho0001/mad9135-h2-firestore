@@ -17,6 +17,7 @@ var categoriesRef = db.collection("GameOfThrones");
 let urlParams = new URLSearchParams(window.location.search);
 let house_id = ""
 let catName = ""
+let WEBURL = 'https://hoho0001.github.io/mad9135-h2-firestore/'
 
 
 if (urlParams.has('house_id')) {
@@ -24,20 +25,20 @@ if (urlParams.has('house_id')) {
   console.log(house_id)
   document.getElementById('back-btn').classList.remove('hide')
   document.getElementById("add-new-btn").addEventListener("click", async function (ev) {
-    window.location.href = `/index.html?add=1&house_id=${house_id}`
+    window.location.href = `${WEBURL}/index.html?add=1&house_id=${house_id}`
   })
   document.getElementById('edit-cancel-btn').addEventListener("click", async function (ev) {
-    window.location.href = `/index.html?house_id=${house_id}`
+    window.location.href = `${WEBURL}/index.html?house_id=${house_id}`
   })
   getHouseName(house_id)
 
 } else {
 
   document.getElementById("add-new-btn").addEventListener("click", async function (ev) {
-    window.location.href = `/index.html?add=1`;
+    window.location.href = `${WEBURL}/index.html?add=1`;
   })
   document.getElementById('edit-cancel-btn').addEventListener("click", async function (ev) {
-    window.location.href = `/index.html`;
+    window.location.href = `${WEBURL}/index.html`;
     console.log("aaaaa")
   })
 }
@@ -163,9 +164,9 @@ function addEditEvent() {
         let name = ev.target.getAttribute("data-value")
 
         if (house_id != "") {
-          window.location.href = `/index.html?edit=1&house_id=${house_id}&id=${itemId}&name=${name}`;
+          window.location.href = `${WEBURL}/index.html?edit=1&house_id=${house_id}&id=${itemId}&name=${name}`;
         } else
-          window.location.href = `/index.html?edit=1&id=${itemId}&name=${name}`;
+          window.location.href = `${WEBURL}/index.html?edit=1&id=${itemId}&name=${name}`;
       });
     });
   }
@@ -178,9 +179,9 @@ function addViewEvent() {
         let itemId = ev.target.id;
         let name = ev.target.getAttribute("data-value")
         if (house_id != "") {
-          window.location.href = `/index.html?house_id=${house_id}&id=${itemId}&name=${name}`;
+          window.location.href = `${WEBURL}/index.html?house_id=${house_id}&id=${itemId}&name=${name}`;
         } else {
-          window.location.href = `/index.html?house_id=${itemId}&name=${name}`;
+          window.location.href = `${WEBURL}/index.html?house_id=${itemId}&name=${name}`;
         }
       });
     });
@@ -202,7 +203,7 @@ function addDeleteEvent() {
 }
 function sendDeleteitemRequest(id) {
   if (!urlParams.has('house_id')) {
-    
+
   }
   categoriesRef
     .doc(id)
@@ -244,9 +245,9 @@ function sendSaveRequest(id) {
   categoriesRef.doc(docuName).set(object, { merge: true })
     .then(function (docRef) {
       if (house_id != "") {
-        window.location.href = `/index.html?house_id=${house_id}`
+        window.location.href = `${WEBURL}/index.html?house_id=${house_id}`
       } else {
-        window.location.href = `/index.html`
+        window.location.href = `${WEBURL}/index.html`
       }
     })
     .catch(function (error) {
