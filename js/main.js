@@ -13,57 +13,63 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 var categoriesRef = db.collection("GameOfThrones");
 
-
 let urlParams = new URLSearchParams(window.location.search);
-let house_id = ""
-let catName = ""
-let WEBURL = 'https://hoho0001.github.io/mad9135-h2-firestore/'
+let house_id = "";
+let catName = "";
+// let WEBURL = "";
+let WEBURL = "https://hoho0001.github.io/mad9135-h2-firestore/";
 
 
-if (urlParams.has('house_id')) {
-  house_id = urlParams.get('house_id')
-  console.log(house_id)
-  document.getElementById('back-btn').classList.remove('hide')
-  document.getElementById("add-new-btn").addEventListener("click", async function (ev) {
-    window.location.href = `${WEBURL}/index.html?add=1&house_id=${house_id}`
-  })
-  document.getElementById('edit-cancel-btn').addEventListener("click", async function (ev) {
-    window.location.href = `${WEBURL}/index.html?house_id=${house_id}`
-  })
-  getHouseName(house_id)
-
+if (urlParams.has("house_id")) {
+  house_id = urlParams.get("house_id");
+  console.log(house_id);
+  document.getElementById("back-btn").classList.remove("hide");
+  document
+    .getElementById("add-new-btn")
+    .addEventListener("click", async function (ev) {
+      window.location.href = `${WEBURL}index.html?add=1&house_id=${house_id}`;
+    });
+  document
+    .getElementById("edit-cancel-btn")
+    .addEventListener("click", async function (ev) {
+      window.location.href = `${WEBURL}index.html?house_id=${house_id}`;
+    });
+  getHouseName(house_id);
 } else {
-
-  document.getElementById("add-new-btn").addEventListener("click", async function (ev) {
-    window.location.href = `${WEBURL}/index.html?add=1`;
-  })
-  document.getElementById('edit-cancel-btn').addEventListener("click", async function (ev) {
-    window.location.href = `${WEBURL}/index.html`;
-    console.log("aaaaa")
-  })
+  document
+    .getElementById("add-new-btn")
+    .addEventListener("click", async function (ev) {
+      window.location.href = `${WEBURL}index.html?add=1`;
+    });
+  document
+    .getElementById("edit-cancel-btn")
+    .addEventListener("click", async function (ev) {
+      window.location.href = `${WEBURL}index.html`;
+      console.log("aaaaa");
+    });
 }
 
-if (urlParams.has('edit') || urlParams.has('add')) {
-  document.getElementById('edit-form').classList.remove('hide')
-  document.getElementById('add-new-btn').classList.add('hide')
-  document.getElementById('top-btns').classList.add('hide')
-  document.getElementById('houses-table').classList.add('hide')
+if (urlParams.has("edit") || urlParams.has("add")) {
+  document.getElementById("edit-form").classList.remove("hide");
+  document.getElementById("add-new-btn").classList.add("hide");
+  document.getElementById("top-btns").classList.add("hide");
+  document.getElementById("house-list").classList.add("hide");
 
-  if (urlParams.has('name')) {
-    let txtEdit = document.getElementById("edit-name")
-    txtEdit.value = urlParams.get('name')
+  if (urlParams.has("name")) {
+    let txtEdit = document.getElementById("edit-name");
+    txtEdit.value = urlParams.get("name");
   }
 
-  document.getElementById('edit-save-btn').addEventListener('click', ev => {
+  document.getElementById("edit-save-btn").addEventListener("click", ev => {
     let itemId;
     let confirm = window.confirm("Do you want to save the item?");
     if (confirm == true) {
       sendSaveRequest(itemId);
     }
-  })
+  });
 } else {
-  if (urlParams.has('name')) {
-    catName = urlParams.get('name')
+  if (urlParams.has("name")) {
+    catName = urlParams.get("name");
   }
 }
 
@@ -76,35 +82,35 @@ categoriesRef
 
 async function getHouseName(id) {
   var docRef = categoriesRef.doc(id);
-  await docRef.get().then(function (doc) {
-    if (doc.exists) {
+  await docRef
+    .get()
+    .then(function (doc) {
+      if (doc.exists) {
+        catName = doc.data().name;
+        let txtEdit = document.getElementById("category-name-lb");
 
-      catName = doc.data().name
-      let txtEdit = document.getElementById("category-name-lb")
-
-      txtEdit.innerText = catName
-    } else {
-      // doc.data() will be undefined in this case
-      return ""
-      console.log("No such document!");
-    }
-  }).catch(function (error) {
-    console.log("Error getting document:", error);
-  });
-
+        txtEdit.innerText = catName;
+      } else {
+        // doc.data() will be undefined in this case
+        return "";
+        console.log("No such document!");
+      }
+    })
+    .catch(function (error) {
+      console.log("Error getting document:", error);
+    });
 }
 function displayList(array) {
-  let table = document.getElementById("houses-table");
-  if (!array || array.length == 0) {
-    let h1 = document.createElement("h1");
-    h1.textContent = "No data found";
-    table.appendChild(h1);
+  if (array.docs.length == 0) {
+    let tableBody = document.getElementById("houses-table");
+    let tableRow = document.createElement("tr");
+    let tdName = document.createElement("td");
+    tdName.classList.add("text-left");
+    tdName.textContent = "No item found!"
+    tableRow.appendChild(tdName);
+
+    tableBody.appendChild(tableRow);
   } else {
-
-    let tableBody = document.createElement("tbody");
-    tableBody.classList.add("table-body");
-    table.appendChild(tableBody);
-
     array.forEach(item => {
       createRow(item);
     });
@@ -112,10 +118,15 @@ function displayList(array) {
     addEditEvent();
     addDeleteEvent();
   }
+
 }
+
+
+
+
 function createRow(item) {
   // console.log(item.data());
-  let tableBody = document.querySelector(".table-body");
+  let tableBody = document.getElementById("houses-table");
   let tableRow = document.createElement("tr");
 
   let tdName = document.createElement("td");
@@ -161,12 +172,11 @@ function addEditEvent() {
     document.querySelectorAll(".edit-link").forEach(editButton => {
       editButton.addEventListener("click", async function (ev) {
         let itemId = ev.target.id;
-        let name = ev.target.getAttribute("data-value")
+        let name = ev.target.getAttribute("data-value");
 
         if (house_id != "") {
-          window.location.href = `${WEBURL}/index.html?edit=1&house_id=${house_id}&id=${itemId}&name=${name}`;
-        } else
-          window.location.href = `${WEBURL}/index.html?edit=1&id=${itemId}&name=${name}`;
+          window.location.href = `${WEBURL}index.html?edit=1&house_id=${house_id}&id=${itemId}&name=${name}`;
+        } else window.location.href = `${WEBURL}index.html?edit=1&id=${itemId}&name=${name}`;
       });
     });
   }
@@ -177,11 +187,11 @@ function addViewEvent() {
     document.querySelectorAll(".view-link").forEach(editButton => {
       editButton.addEventListener("click", async function (ev) {
         let itemId = ev.target.id;
-        let name = ev.target.getAttribute("data-value")
+        let name = ev.target.getAttribute("data-value");
         if (house_id != "") {
-          window.location.href = `${WEBURL}/index.html?house_id=${house_id}&id=${itemId}&name=${name}`;
+          window.location.href = `${WEBURL}index.html?house_id=${house_id}&id=${itemId}&name=${name}`;
         } else {
-          window.location.href = `${WEBURL}/index.html?house_id=${itemId}&name=${name}`;
+          window.location.href = `${WEBURL}index.html?house_id=${itemId}&name=${name}`;
         }
       });
     });
@@ -194,7 +204,19 @@ function addDeleteEvent() {
       deleteButton.addEventListener("click", async function (ev) {
         let itemId = ev.target.id;
         let confirm = window.confirm("Do you want to delete the item?");
+        console.log(`${itemId}`)
         if (confirm == true) {
+          if (!urlParams.has("house_id")) {
+            categoriesRef
+              .where("parentId", "==", itemId)
+              .onSnapshot(function (querySnapshot) {
+                querySnapshot.forEach(item => {
+                  console.log(`catefory has item: ${item.id}`)
+                  sendDeleteitemRequest(item.id)
+                });
+              });
+          }
+          console.log("item only")
           sendDeleteitemRequest(itemId);
         }
       });
@@ -202,14 +224,11 @@ function addDeleteEvent() {
   }
 }
 function sendDeleteitemRequest(id) {
-  if (!urlParams.has('house_id')) {
-
-  }
   categoriesRef
     .doc(id)
     .delete()
     .then(function () {
-      location.reload()
+      location.reload();
       console.log(`Employee was deleted`);
     })
     .catch(function (error) {
@@ -218,42 +237,41 @@ function sendDeleteitemRequest(id) {
 }
 
 function sendSaveRequest(id) {
-  let name = document.getElementById('edit-name').value
-  let docuName = name.replace(" ", "")
+  let name = document.getElementById("edit-name").value;
+  let docuName = name.replace(" ", "");
 
-  let object = {}
-  let merge = { merge: false }
-  
-  if (urlParams.has('house_id')) {
-    object = { name, parentId: urlParams.get('house_id') }
+  let object = {};
+  let merge = { merge: false };
+
+  if (urlParams.has("house_id")) {
+    object = { name, parentId: urlParams.get("house_id") };
   } else {
-    object = { name, parentId: "" }
+    object = { name, parentId: "" };
   }
-  if (urlParams.has('edit')) {
-    docuName = urlParams.get('id')
-    merge = { merge: true }
+  if (urlParams.has("edit")) {
+    docuName = urlParams.get("id");
+    merge = { merge: true };
   }
-  console.log(docuName)
+  console.log(docuName);
 
   var docRef = categoriesRef.doc(docuName);
-   docRef.get().then(function (doc) {
+  docRef.get().then(function (doc) {
     if (doc.exists) {
-  console.log(`exist`)
+      console.log(`exist`);
+    }
+  });
 
-    }})
-
-  categoriesRef.doc(docuName).set(object, { merge: true })
+  categoriesRef
+    .doc(docuName)
+    .set(object, merge)
     .then(function (docRef) {
       if (house_id != "") {
-        window.location.href = `${WEBURL}/index.html?house_id=${house_id}`
+        window.location.href = `${WEBURL}index.html?house_id=${house_id}`;
       } else {
-        window.location.href = `${WEBURL}/index.html`
+        window.location.href = `${WEBURL}index.html`;
       }
     })
     .catch(function (error) {
-
-      console.log(error)
-    })
-
-
+      console.log(error);
+    });
 }

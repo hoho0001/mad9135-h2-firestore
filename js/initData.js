@@ -1,5 +1,4 @@
-var db = firebase.firestore();
-var categoriesRef = db.collection("GameOfThrones");
+
 
 categoriesRef.doc("Stark").set({
     name: "Stark", 
